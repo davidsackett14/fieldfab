@@ -9,6 +9,9 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+  </script>
   <title>FieldFab</title>
 </head>
 <body>
@@ -22,82 +25,41 @@
       <h1>Project settings</h1>
       <div class="grid settings">
         <label>Measurement system
-          <select id="system">
-            <option value="imperial">Imperial</option>
-            <option value="metric">Metric</option>
-          </select>
+          <select id="system"><option value="imperial">Imperial</option><option value="metric">Metric</option></select>
         </label>
         <label>Fabrication tolerance
-          <select id="tolerance">
-            <option value="0.015625">1/64 in</option>
-            <option value="0.03125">1/32 in</option>
-            <option value="0.0625">1/16 in</option>
-            <option value="0.125" selected>1/8 in</option>
-            <option value="0.25">1/4 in</option>
-          </select>
+          <select id="tolerance"><option value="0.015625">1/64 in</option><option value="0.03125">1/32 in</option><option value="0.0625">1/16 in</option><option value="0.125" selected>1/8 in</option><option value="0.25">1/4 in</option></select>
         </label>
         <label>Wrap seam location
-          <select id="seamLocation">
-            <option value="FR" selected>Front right</option>
-            <option value="FL">Front left</option>
-            <option value="RR">Rear right</option>
-            <option value="RL">Rear left</option>
-          </select>
+          <select id="seamLocation"><option value="FR" selected>Front right</option><option value="FL">Front left</option><option value="RR">Rear right</option><option value="RL">Rear left</option></select>
         </label>
       </div>
 
       <h2>Transition dimensions</h2>
       <p class="hint">Imperial accepts values such as 12 3/8, 12-3/8, or 42.5. Metric values are entered in millimetres.</p>
       <div class="grid dimensions">
-        <fieldset>
-          <legend>Top opening</legend>
-          <label>Width <input id="topWidth" value="20" inputmode="decimal" /></label>
-          <label>Depth <input id="topDepth" value="16" inputmode="decimal" /></label>
-        </fieldset>
-        <fieldset>
-          <legend>Bottom opening</legend>
-          <label>Width <input id="bottomWidth" value="16" inputmode="decimal" /></label>
-          <label>Depth <input id="bottomDepth" value="12" inputmode="decimal" /></label>
-        </fieldset>
-        <fieldset>
-          <legend>Bottom center offset</legend>
-          <label>Right (+) / left (-) <input id="offsetX" value="2" inputmode="decimal" /></label>
-          <label>Rear (+) / front (-) <input id="offsetY" value="0" inputmode="decimal" /></label>
-        </fieldset>
-        <fieldset>
-          <legend>Vertical corner heights</legend>
-          <label>Front left <input id="heightFL" value="18" inputmode="decimal" /></label>
-          <label>Front right <input id="heightFR" value="18" inputmode="decimal" /></label>
-          <label>Rear left <input id="heightRL" value="18" inputmode="decimal" /></label>
-          <label>Rear right <input id="heightRR" value="18" inputmode="decimal" /></label>
-        </fieldset>
+        <fieldset><legend>Top opening</legend><label>Width <input id="topWidth" value="20" inputmode="decimal" /></label><label>Depth <input id="topDepth" value="16" inputmode="decimal" /></label></fieldset>
+        <fieldset><legend>Bottom opening</legend><label>Width <input id="bottomWidth" value="16" inputmode="decimal" /></label><label>Depth <input id="bottomDepth" value="12" inputmode="decimal" /></label></fieldset>
+        <fieldset><legend>Bottom center offset</legend><label>Right (+) / left (-) <input id="offsetX" value="2" inputmode="decimal" /></label><label>Rear (+) / front (-) <input id="offsetY" value="0" inputmode="decimal" /></label></fieldset>
+        <fieldset><legend>Vertical corner heights</legend><label>Front left <input id="heightFL" value="18" inputmode="decimal" /></label><label>Front right <input id="heightFR" value="18" inputmode="decimal" /></label><label>Rear left <input id="heightRL" value="18" inputmode="decimal" /></label><label>Rear right <input id="heightRR" value="18" inputmode="decimal" /></label></fieldset>
       </div>
       <p class="rounding-note">Fabrication rule: opening sizes round upward; vertical heights and calculated corner lengths round downward.</p>
-      <div class="build-actions">
-        <button id="constructModel" class="primary-action" type="button">Construct model</button>
-        <span id="buildStatus">Enter dimensions, then construct the model.</span>
-      </div>
+      <div class="build-actions"><button id="constructModel" class="primary-action" type="button">Construct model</button><span id="buildStatus">Enter dimensions, then construct the model.</span></div>
       <div id="message" role="status"></div>
     </section>
 
     <section class="card viewer-card">
-      <div class="viewer-heading">
-        <div><h2>3D fitting</h2><p>Drag to rotate. Pinch or scroll to zoom.</p></div>
-        <div class="axis-key"><span class="x">X width</span><span class="y">Y depth</span><span class="z">Z height</span></div>
-      </div>
-      <div id="viewer"></div>
+      <div class="viewer-heading"><div><h2>3D fitting</h2><p>Drag to rotate. Pinch or scroll to zoom.</p></div><div class="axis-key"><span class="x">X width</span><span class="y">Y depth</span><span class="z">Z height</span></div></div>
+      <div id="viewer"><div id="viewerFallback">Loading 3D model...</div></div>
       <p id="seamSummary" class="seam-summary">Wrap seam: Front right</p>
     </section>
 
     <section class="card">
-      <h2>Fabrication values</h2>
-      <div id="openingResults" class="results opening-results"></div>
-      <h2 class="subheading">Calculated corner edges</h2>
-      <div id="results" class="results"></div>
+      <h2>Fabrication values</h2><div id="openingResults" class="results opening-results"></div>
+      <h2 class="subheading">Calculated corner edges</h2><div id="results" class="results"></div>
       <p class="hint">The model uses full-precision measurements. Fabrication values use the selected tolerance and directional rounding rule.</p>
     </section>
   </main>
-
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=3"></script>
 </body>
 </html>
