@@ -1,53 +1,8 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="description" content="FieldFab HVAC fabrication calculator" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="stylesheet" href="styles.css" />
-  <title>FieldFab</title>
-</head>
-<body>
-  <header><div><strong>FieldFab</strong><span>Transition calculator</span></div><button id="resetView" type="button">Reset view</button></header>
-  <main>
-    <section class="card controls">
-      <h1>Project settings</h1>
-      <div class="grid settings">
-        <label>Measurement system<select id="system"><option value="imperial">Imperial</option><option value="metric">Metric</option></select></label>
-        <label>Fabrication tolerance<select id="tolerance"><option value="0.015625">1/64 in</option><option value="0.03125">1/32 in</option><option value="0.0625">1/16 in</option><option value="0.125" selected>1/8 in</option><option value="0.25">1/4 in</option></select></label>
-        <label>Wrap seam location<select id="seamLocation"><option value="FR" selected>Front right</option><option value="FL">Front left</option><option value="RR">Rear right</option><option value="RL">Rear left</option></select></label>
-      </div>
-      <h2>Transition dimensions</h2>
-      <p class="hint">Imperial accepts values such as 12 3/8, 12-3/8, or 42.5. Metric values are entered in millimetres.</p>
-      <div class="grid dimensions">
-        <fieldset><legend>Top opening</legend><label>Width <input id="topWidth" value="20" inputmode="decimal" /></label><label>Depth <input id="topDepth" value="16" inputmode="decimal" /></label></fieldset>
-        <fieldset><legend>Bottom opening</legend><label>Width <input id="bottomWidth" value="16" inputmode="decimal" /></label><label>Depth <input id="bottomDepth" value="12" inputmode="decimal" /></label></fieldset>
-        <fieldset><legend>Bottom center offset</legend><label>Right (+) / left (-) <input id="offsetX" value="2" inputmode="decimal" /></label><label>Rear (+) / front (-) <input id="offsetY" value="0" inputmode="decimal" /></label></fieldset>
-        <fieldset><legend>Vertical corner heights</legend><label>Front left <input id="heightFL" value="18" inputmode="decimal" /></label><label>Front right <input id="heightFR" value="18" inputmode="decimal" /></label><label>Rear left <input id="heightRL" value="18" inputmode="decimal" /></label><label>Rear right <input id="heightRR" value="18" inputmode="decimal" /></label></fieldset>
-      </div>
-      <p class="rounding-note">Fabrication rule: opening sizes round upward; vertical heights and calculated corner lengths round downward.</p>
-      <div class="build-actions"><button id="constructModel" class="primary-action" type="button">Construct models</button><span id="buildStatus">Enter dimensions, then construct the models.</span></div>
-      <div id="message" role="status"></div>
-    </section>
-
-    <section class="card viewer-card">
-      <div class="viewer-heading"><div><h2>Dimensioned 3D fitting</h2><p>Drag to rotate. Scroll or use the buttons to zoom.</p></div><div class="viewer-actions"><button id="zoomIn" type="button">Zoom +</button><button id="zoomOut" type="button">Zoom -</button></div></div>
-      <div id="viewer"><canvas id="modelCanvas" aria-label="Rotatable dimensioned 3D transition model"></canvas></div>
-      <div class="viewer-footer"><p id="seamSummary" class="seam-summary">Wrap seam: Front right</p><div class="axis-key"><span class="x">Opening dimensions</span><span class="y">Corner lengths</span><span class="z">Offsets</span></div></div>
-    </section>
-
-    <section class="card wrapper-card">
-      <div class="viewer-heading"><div><h2>One-piece wrapper development</h2><p>Divider layout from the selected seam. Solid vertical lines are bends; the pink outside edges form the closing seam.</p></div></div>
-      <div id="wrapperViewer"><canvas id="wrapperCanvas" aria-label="Dimensioned flat wrapper development"></canvas></div>
-      <p id="wrapperStatus" class="hint"></p>
-    </section>
-
-    <section class="card"><h2>Fabrication values</h2><div id="openingResults" class="results"></div><h2 class="subheading">Calculated corner edges</h2><div id="results" class="results"></div><p class="hint">The model uses full-precision measurements. Fabrication values use the selected tolerance and directional rounding rule.</p></section>
-  </main>
-  <script src="app.js?v=5" defer></script>
-</body>
-</html>
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><meta name="theme-color" content="#0f172a" /><meta name="description" content="FieldFab HVAC fabrication calculator" /><link rel="manifest" href="manifest.webmanifest" /><link rel="icon" href="icon.svg" type="image/svg+xml" /><link rel="apple-touch-icon" href="icon.svg" /><link rel="stylesheet" href="styles.css" /><title>FieldFab</title></head>
+<body><header><div><strong>FieldFab</strong><span>Transition calculator</span></div><button id="resetView" type="button">Reset view</button></header><main>
+<section class="card controls"><h1>Project settings</h1><div class="grid settings"><label>Measurement system<select id="system"><option value="imperial">Imperial</option><option value="metric">Metric</option></select></label><label>Fabrication tolerance<select id="tolerance"><option value="0.015625">1/64 in</option><option value="0.03125">1/32 in</option><option value="0.0625">1/16 in</option><option value="0.125" selected>1/8 in</option><option value="0.25">1/4 in</option></select></label><label>Wrap seam location<select id="seamLocation"><option value="FR" selected>Front right</option><option value="FL">Front left</option><option value="RR">Rear right</option><option value="RL">Rear left</option></select></label></div><h2>Transition dimensions</h2><p class="hint">Imperial accepts decimals or fractions. All calculated imperial dimensions are displayed as fractions rounded to the nearest 1/16 inch.</p><div class="grid dimensions"><fieldset><legend>Top opening</legend><label>Width <input id="topWidth" value="20" inputmode="decimal" /></label><label>Depth <input id="topDepth" value="16" inputmode="decimal" /></label></fieldset><fieldset><legend>Bottom opening</legend><label>Width <input id="bottomWidth" value="16" inputmode="decimal" /></label><label>Depth <input id="bottomDepth" value="12" inputmode="decimal" /></label></fieldset><fieldset><legend>Bottom center offset</legend><label>Right (+) / left (-) <input id="offsetX" value="2" inputmode="decimal" /></label><label>Rear (+) / front (-) <input id="offsetY" value="0" inputmode="decimal" /></label></fieldset><fieldset><legend>Vertical corner heights</legend><label>Front left <input id="heightFL" value="18" inputmode="decimal" /></label><label>Front right <input id="heightFR" value="18" inputmode="decimal" /></label><label>Rear left <input id="heightRL" value="18" inputmode="decimal" /></label><label>Rear right <input id="heightRR" value="18" inputmode="decimal" /></label></fieldset></div><p class="rounding-note">Display: nearest 1/16 inch. Fabrication rule: opening sizes round upward and corner lengths round downward to the selected tolerance.</p><div class="build-actions"><button id="constructModel" class="primary-action" type="button">Construct models</button><span id="buildStatus">Enter dimensions, then construct the models.</span></div><div id="message" role="status"></div></section>
+<section class="card viewer-card"><div class="viewer-heading"><div><h2>Dimensioned 3D fitting</h2><p>Drag to rotate. Scroll or use the buttons to zoom.</p></div><div class="viewer-actions"><button id="zoomIn" type="button">Zoom +</button><button id="zoomOut" type="button">Zoom -</button></div></div><div id="viewer"><canvas id="modelCanvas" aria-label="Rotatable dimensioned 3D transition model"></canvas></div><div class="viewer-footer"><p id="seamSummary" class="seam-summary">Wrap seam: Front right</p><div class="axis-key"><span class="x">Opening dimensions</span><span class="y">Corner lengths</span><span class="z">Offsets</span></div></div></section>
+<section class="card wrapper-card"><div class="viewer-heading"><div><h2>One-piece wrapper development</h2><p>Divider layout from the selected seam. Solid vertical lines are bends; pink outside edges form the closing seam.</p></div></div><div id="wrapperViewer"><canvas id="wrapperCanvas" aria-label="Dimensioned flat wrapper development"></canvas></div><p id="wrapperStatus" class="hint"></p></section>
+<section class="card"><h2>Fabrication values</h2><div id="openingResults" class="results"></div><h2 class="subheading">Calculated corner edges</h2><div id="results" class="results"></div><p class="hint">Geometry retains full precision internally. Displayed exact values are converted to the nearest 1/16 inch.</p></section></main><script src="app.js?v=6" defer></script></body></html>
