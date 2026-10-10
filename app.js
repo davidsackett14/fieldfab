@@ -50,19 +50,28 @@ for(let i=0;i<4;i++){const x=wrapper.order[i],y=wrapper.order[i+1];panels+='<tr>
 $('panelSchedule').innerHTML=panels}
 function printWrapper(){
   renderWrapper();
+  const source=wrapperCanvas;
+  const wide=source.width>=source.height;
+  const pageWide=true;
+  const rotate=!wide&&pageWide;
+  const out=document.createElement('canvas');
+  out.width=rotate?source.height:source.width;
+  out.height=rotate?source.width:source.height;
+  const octx=out.getContext('2d');
+  octx.fillStyle='#fff';octx.fillRect(0,0,out.width,out.height);
+  if(rotate){octx.translate(out.width,0);octx.rotate(Math.PI/2)}
+  octx.drawImage(source,0,0);
+  const dataUrl=out.toDataURL('image/png');
   const win=window.open('','_blank');
   if(!win){alert('Allow pop-ups to print.');return}
-  const dataUrl=wrapperCanvas.toDataURL('image/png');
-  const drawingIsWide=wrapperCanvas.width>=wrapperCanvas.height;
-  const orientation=drawingIsWide?'landscape':'portrait';
-  const html='<!doctype html><html><head><title>FieldFab Wrapper</title><style>'+ 
-    '@page{size:letter '+orientation+';margin:0.75in}'+
-    'html,body{margin:0;padding:0;width:100%;height:100%;background:#fff}'+
-    'body{display:flex;align-items:center;justify-content:center;overflow:hidden}'+
+  const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>FieldFab Wrapper</title><style>'+ 
+    '@page{size:11in 8.5in;margin:0.75in}'+
+    '*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;padding:0;background:#fff;overflow:hidden}'+
+    'body{display:flex;align-items:center;justify-content:center}'+
     'img{display:block;width:100%;height:100%;object-fit:contain}'+
-    '@media screen{body{min-height:100vh}}'+
-    '</style></head><body><img alt="FieldFab wrapper drawing" src="'+dataUrl+'"/>'+ 
-    '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>';
+    '@media print{html,body{width:9.5in;height:7in}}'+
+    '</style></head><body><img src="'+dataUrl+'" alt="FieldFab wrapper drawing">'+
+    '<script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script></body></html>';
   win.document.open();win.document.write(html);win.document.close();
 }
 function saveState(){localStorage.setItem('fieldfab-state',JSON.stringify({system:$('system').value,tolerance:tolerance.value,seamLocation:$('seamLocation').value,seamType:$('seamType').value,bottomConnection:$('bottomConnection').value,position:positioningState(),values:Object.fromEntries(ids.map(function(id){return[id,$(id).value]}))}))}
