@@ -34,7 +34,14 @@
     <div class="grid dimensions">
       <fieldset><legend>Top opening</legend><label>Width <input id="topWidth" value="20" inputmode="decimal" /></label><label>Depth <input id="topDepth" value="16" inputmode="decimal" /></label><label>Diagonal <input id="topDiagonal" placeholder="optional" inputmode="decimal" /></label><span id="topDiagonalStatus" class="diag-status"></span></fieldset>
       <fieldset><legend>Bottom opening</legend><label>Width <input id="bottomWidth" value="16" inputmode="decimal" /></label><label>Depth <input id="bottomDepth" value="12" inputmode="decimal" /></label><label>Diagonal <input id="bottomDiagonal" placeholder="optional" inputmode="decimal" /></label><span id="bottomDiagonalStatus" class="diag-status"></span></fieldset>
-      <fieldset><legend>Bottom center offset</legend><label>Right (+) / left (-) <input id="offsetX" value="2" inputmode="decimal" /></label><label>Rear (+) / front (-) <input id="offsetY" value="0" inputmode="decimal" /></label></fieldset>
+      <fieldset class="positioning-fieldset"><legend>Bottom position relative to top</legend>
+        <div class="flat-sides"><span>Flat sides</span><label><input type="checkbox" id="flatLeft" /> Left</label><label><input type="checkbox" id="flatRight" /> Right</label><label><input type="checkbox" id="flatFront" /> Front</label><label><input type="checkbox" id="flatBack" /> Back</label></div>
+        <label>X reference<select id="xReference"><option value="center">Top center</option><option value="left">Top left side</option><option value="right">Top right side</option></select></label>
+        <label id="offsetXLabel">Bottom X offset<input id="offsetX" value="2" inputmode="decimal" /></label>
+        <label>Y reference<select id="yReference"><option value="center">Top center</option><option value="front">Top front side</option><option value="back">Top back side</option></select></label>
+        <label id="offsetYLabel">Bottom Y offset<input id="offsetY" value="0" inputmode="decimal" /></label>
+        <p id="positionHelp" class="position-help"></p>
+      </fieldset>
       <fieldset><legend>Corner heights</legend><label>Front left <input id="heightFL" value="18" inputmode="decimal" /></label><label>Front right <input id="heightFR" value="18" inputmode="decimal" /></label><label>Rear left <input id="heightRL" value="18" inputmode="decimal" /></label><label>Rear right <input id="heightRR" value="18" inputmode="decimal" /></label></fieldset>
     </div>
     <div class="build-actions"><button id="constructModel" class="primary-action" type="button">Construct models</button><span id="buildStatus"></span></div>
@@ -67,6 +74,6 @@
     <div id="results" class="results"></div>
   </section>
 </main>
-<script src="app.js?v=19" defer></script>
+<script src="app.js?v=20" defer></script>
 </body>
 </html>
