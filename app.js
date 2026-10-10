@@ -53,15 +53,13 @@ function printWrapper(){
   const win=window.open('','_blank');
   if(!win){alert('Allow pop-ups to print.');return}
   const dataUrl=wrapperCanvas.toDataURL('image/png');
-  const portraitWidth=7,portraitHeight=9.5,landscapeWidth=9.5,landscapeHeight=7;
-  const portraitScale=Math.min(portraitWidth/wrapperCanvas.width,portraitHeight/wrapperCanvas.height);
-  const landscapeScale=Math.min(landscapeWidth/wrapperCanvas.width,landscapeHeight/wrapperCanvas.height);
-  const orientation=landscapeScale>=portraitScale?'landscape':'portrait';
+  const drawingIsWide=wrapperCanvas.width>=wrapperCanvas.height;
+  const orientation=drawingIsWide?'landscape':'portrait';
   const html='<!doctype html><html><head><title>FieldFab Wrapper</title><style>'+ 
-    '@page{size:'+orientation+';margin:0.75in}'+
+    '@page{size:letter '+orientation+';margin:0.75in}'+
     'html,body{margin:0;padding:0;width:100%;height:100%;background:#fff}'+
     'body{display:flex;align-items:center;justify-content:center;overflow:hidden}'+
-    'img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}'+
+    'img{display:block;width:100%;height:100%;object-fit:contain}'+
     '@media screen{body{min-height:100vh}}'+
     '</style></head><body><img alt="FieldFab wrapper drawing" src="'+dataUrl+'"/>'+ 
     '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>';
