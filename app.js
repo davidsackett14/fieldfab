@@ -48,7 +48,25 @@ for(let i=0;i<5;i++){const k=wrapper.order[i];rows+='<tr><td>C'+i+'</td><td>'+(i
 $('cornerSchedule').innerHTML=rows;
 for(let i=0;i<4;i++){const x=wrapper.order[i],y=wrapper.order[i+1];panels+='<tr><td>P'+(i+1)+'</td><td>'+x+' to '+y+'</td><td>'+exactDisplay(dist(geometry.B[x],geometry.B[y]))+'</td><td>'+exactDisplay(dist(geometry.T[x],geometry.T[y]))+'</td><td>D'+(i+1)+': '+exactDisplay(dist(geometry.B[x],geometry.T[y]))+'</td></tr>'}
 $('panelSchedule').innerHTML=panels}
-function printWrapper(){renderWrapper();const win=window.open('','_blank');if(!win){alert('Allow pop-ups to print.');return}const cornerTable=$('cornerTable').outerHTML,panelTable=$('panelTable').outerHTML,blankText=$('blankSchedule').textContent,allowText=$('allowanceSummary').innerHTML,dataUrl=wrapperCanvas.toDataURL();const page=['<html><head><title>FieldFab Wrapper</title><style>@page{size:landscape;margin:.3in}body{font-family:Arial;color:#111}img{width:100%;max-height:7in;object-fit:contain}table{width:100%;border-collapse:collapse;font-size:9pt}th,td{border:1px solid #555;padding:4px}</style></head><body>','<h1>FieldFab One-Piece Wrapper</h1><p>'+blankText+'</p>','<img src="'+dataUrl+'"/>',allowText,cornerTable,panelTable,'<script>onload=function(){setTimeout(function(){print()},250)}<\/script></body></html>'].join('');win.document.write(page);win.document.close()}
+function printWrapper(){
+  renderWrapper();
+  const win=window.open('','_blank');
+  if(!win){alert('Allow pop-ups to print.');return}
+  const dataUrl=wrapperCanvas.toDataURL('image/png');
+  const portraitWidth=7,portraitHeight=9.5,landscapeWidth=9.5,landscapeHeight=7;
+  const portraitScale=Math.min(portraitWidth/wrapperCanvas.width,portraitHeight/wrapperCanvas.height);
+  const landscapeScale=Math.min(landscapeWidth/wrapperCanvas.width,landscapeHeight/wrapperCanvas.height);
+  const orientation=landscapeScale>=portraitScale?'landscape':'portrait';
+  const html='<!doctype html><html><head><title>FieldFab Wrapper</title><style>'+ 
+    '@page{size:'+orientation+';margin:0.75in}'+
+    'html,body{margin:0;padding:0;width:100%;height:100%;background:#fff}'+
+    'body{display:flex;align-items:center;justify-content:center;overflow:hidden}'+
+    'img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}'+
+    '@media screen{body{min-height:100vh}}'+
+    '</style></head><body><img alt="FieldFab wrapper drawing" src="'+dataUrl+'"/>'+ 
+    '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>';
+  win.document.open();win.document.write(html);win.document.close();
+}
 function saveState(){localStorage.setItem('fieldfab-state',JSON.stringify({system:$('system').value,tolerance:tolerance.value,seamLocation:$('seamLocation').value,seamType:$('seamType').value,bottomConnection:$('bottomConnection').value,position:positioningState(),values:Object.fromEntries(ids.map(function(id){return[id,$(id).value]}))}))}
 function dirty(){$('buildStatus').textContent='Settings changed. Select Construct models to update.';$('buildStatus').classList.add('pending')}
 function rebuild(reset){try{geometry=readGeometry();wrapper=buildWrapper(geometry);if(reset){yaw=-.7;pitch=.42;zoom=1}const seam=$('seamLocation').value;$('message').textContent='';$('results').innerHTML=corners.map(function(k){return '<div class="result'+(k===seam?' seam-result':'')+'"><strong>'+k+' edge</strong><span>'+exactDisplay(dist(geometry.B[k],geometry.T[k]))+'</span><span>Cut down: '+format(dist(geometry.B[k],geometry.T[k]),'down')+'</span></div>'}).join('');const v=geometry.v;$('openingResults').innerHTML=[['Top width',v.topWidth],['Top depth',v.topDepth],['Bottom width',v.bottomWidth],['Bottom depth',v.bottomDepth]].map(function(pair){return '<div class="result"><strong>'+pair[0]+'</strong><span>'+exactDisplay(pair[1])+'</span><span>Opening up: '+format(pair[1],'up')+'</span></div>'}).join('');$('seamSummary').textContent='Wrap seam: '+seamNames[seam];$('buildStatus').textContent='Models constructed.';$('buildStatus').classList.remove('pending');saveState();render3D();renderWrapper()}catch(e){$('message').textContent=e.message}}
