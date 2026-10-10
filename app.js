@@ -23,7 +23,7 @@ function rotate(p,c){let x=p[0]-c[0],y=p[1]-c[1],z=p[2]-c[2],cy=Math.cos(yaw),sy
 function setupCanvas(el,c,host){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(host.clientWidth,1),h=Math.max(host.clientHeight,1),nw=Math.round(w*dpr),nh=Math.round(h*dpr);if(el.width!==nw||el.height!==nh){el.width=nw;el.height=nh;el.style.width=w+'px';el.style.height=h+'px';c.setTransform(dpr,0,0,dpr,0,0)}return{w:w,h:h}}
 function label(c,text,x,y,opts){opts=opts||{};c.save();c.font='800 '+(opts.size||13)+'px system-ui';const pad=5,m=c.measureText(text),w=m.width+pad*2,h=(opts.size||13)+pad*2;c.fillStyle=opts.bg||'#fff';c.strokeStyle=opts.border||'#0f172a';c.lineWidth=1.5;c.beginPath();if(c.roundRect)c.roundRect(x-w/2,y-h/2,w,h,4);else c.rect(x-w/2,y-h/2,w,h);c.fill();c.stroke();c.fillStyle=opts.color||'#0f172a';c.textAlign='center';c.textBaseline='middle';c.fillText(text,x,y);c.restore()}
 function dimension(c,a,b,text,offset,color){color=color||'#111827';const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,A=[a[0]+nx*offset,a[1]+ny*offset],B=[b[0]+nx*offset,b[1]+ny*offset];c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=1.7;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(A[0],A[1]);c.moveTo(b[0],b[1]);c.lineTo(B[0],B[1]);c.moveTo(A[0],A[1]);c.lineTo(B[0],B[1]);c.stroke();label(c,text,(A[0]+B[0])/2+nx*13,(A[1]+B[1])/2+ny*13,{size:11,color:color});c.restore()}
-function render3D(){const size=setupCanvas(canvas,ctx,viewer);ctx.clearRect(0,0,size.w,size.h);if(!geometry)return;const pts=corners.map(function(k){return geometry.B[k]}).concat(corners.map(function(k){return geometry.T[k]})),cx=pts.reduce(function(s,p){return s+p[0]},0)/8,cy=pts.reduce(function(s,p){return s+p[1]},0)/8,cz=pts.reduce(function(s,p){return s+p[2]},0)/8,center=[cx,cy,cz],rot=pts.map(function(p){return rotate(p,center)}),span=Math.max.apply(null,rot.map(function(p){return Math.abs(p[0])}).concat(rot.map(function(p){return Math.abs(p[1])})).concat([1])),scale=Math.min(size.w,size.h)*.31/span*zoom,P=function(p){return [size.w/2+p[0]*scale,size.h/2-p[1]*scale,p[2]]},map={};corners.forEach(function(k,i){map['B'+k]=P(rot[i])});corners.forEach(function(k,i){map['T'+k]=P(rot[i+4])});const faces=[['BFL','BFR','TFR','TFL','#0284c7'],['BFR','BRR','TRR','TFR','#0891b2'],['BRR','BRL','TRL','TRR','#0e7490'],['BRL','BFL','TFL','TRL','#0369a1']];faces.forEach(function(f){ctx.beginPath();ctx.moveTo(f[0][0],f[0][1]);ctx.moveTo(map[f[0]][0],map[f[0]][1]);for(let i=1;i<4;i++)ctx.lineTo(map[f[i]][0],map[f[i]][1]);ctx.closePath();ctx.fillStyle=f[4]+'b5';ctx.fill();ctx.strokeStyle='#bae6fd';ctx.stroke()});const seam=$('seamLocation').value;corners.forEach(function(k){ctx.beginPath();ctx.moveTo(map['B'+k][0],map['B'+k][1]);ctx.lineTo(map['T'+k][0],map['T'+k][1]);ctx.strokeStyle=k===seam?'#fb7185':'#fbbf24';ctx.lineWidth=k===seam?5:3;ctx.stroke();const m=midpoint(map['B'+k],map['T'+k]);label(ctx,k+' '+exactDisplay(dist(geometry.B[k],geometry.T[k])),m[0],m[1],{size:11})})}
+function render3D(){const size=setupCanvas(canvas,ctx,viewer);ctx.clearRect(0,0,size.w,size.h);if(!geometry)return;const pts=corners.map(function(k){return geometry.B[k]}).concat(corners.map(function(k){return geometry.T[k]})),cx=pts.reduce(function(s,p){return s+p[0]},0)/8,cy=pts.reduce(function(s,p){return s+p[1]},0)/8,cz=pts.reduce(function(s,p){return s+p[2]},0)/8,center=[cx,cy,cz],rot=pts.map(function(p){return rotate(p,center)}),span=Math.max.apply(null,rot.map(function(p){return Math.abs(p[0])}).concat(rot.map(function(p){return Math.abs(p[1])})).concat([1])),scale=Math.min(size.w,size.h)*.31/span*zoom,P=function(p){return [size.w/2+p[0]*scale,size.h/2-p[1]*scale,p[2]],map={}};corners.forEach(function(k,i){map['B'+k]=P(rot[i])});corners.forEach(function(k,i){map['T'+k]=P(rot[i+4])});const faces=[['BFL','BFR','TFR','TFL','#0284c7'],['BFR','BRR','TRR','TFR','#0891b2'],['BRR','BRL','TRL','TRR','#0e7490'],['BRL','BFL','TFL','TRL','#0369a1']];faces.forEach(function(f){ctx.beginPath();ctx.moveTo(f[0][0],f[0][1]);ctx.moveTo(map[f[0]][0],map[f[0]][1]);for(let i=1;i<4;i++)ctx.lineTo(map[f[i]][0],map[f[i]][1]);ctx.closePath();ctx.fillStyle=f[4]+'b5';ctx.fill();ctx.strokeStyle='#bae6fd';ctx.stroke()});const seam=$('seamLocation').value;corners.forEach(function(k){ctx.beginPath();ctx.moveTo(map['B'+k][0],map['B'+k][1]);ctx.lineTo(map['T'+k][0],map['T'+k][1]);ctx.strokeStyle=k===seam?'#fb7185':'#fbbf24';ctx.lineWidth=k===seam?5:3;ctx.stroke();const m=midpoint(map['B'+k],map['T'+k]);label(ctx,k+' '+exactDisplay(dist(geometry.B[k],geometry.T[k])),m[0],m[1],{size:11})})}
 function circleIntersections(a,ra,b,rb){const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy);if(!d||d>ra+rb||d<Math.abs(ra-rb))return[];const x=(ra*ra-rb*rb+d*d)/(2*d),h=Math.sqrt(Math.max(0,ra*ra-x*x)),ux=dx/d,uy=dy/d,p=[a[0]+x*ux,a[1]+x*uy];return[[p[0]-uy*h,p[1]+ux*h],[p[0]+uy*h,p[1]-ux*h]]}
 function sameSideChoice(points,a,b,ref){if(!points.length)return null;if(points.length===1)return points[0];const cross=function(p){return (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0])},sign=Math.sign(cross(ref))||1;return points.find(function(p){return Math.sign(cross(p))===-sign})||points[0]}
 function buildWrapper(g){const start=corners.indexOf($('seamLocation').value),order=[];for(let i=0;i<5;i++)order.push(corners[(start+i)%4]);const B=[[0,0]],T=[[0,dist(g.B[order[0]],g.T[order[0]])]];for(let i=0;i<4;i++){const a=order[i],b=order[i+1],sb=B[i],st=T[i],bottom=dist(g.B[a],g.B[b]),top=dist(g.T[a],g.T[b]),edge=dist(g.B[b],g.T[b]),diag=dist(g.B[a],g.T[b]),opts=circleIntersections(sb,diag,st,top),nt=sameSideChoice(opts,sb,st,i?B[i-1]:[-1,0])||[st[0]+top,st[1]];const opts2=circleIntersections(sb,bottom,nt,edge),nb=sameSideChoice(opts2,sb,nt,st)||[sb[0]+bottom,sb[1]];B.push(nb);T.push(nt)}const all=B.concat(T),xs=all.map(function(p){return p[0]}),ys=all.map(function(p){return p[1]}),minX=Math.min.apply(null,xs),maxX=Math.max.apply(null,xs),minY=Math.min.apply(null,ys),maxY=Math.max.apply(null,ys);return{order:order,B:B,T:T,bounds:{minX:minX,maxX:maxX,minY:minY,maxY:maxY,width:maxX-minX,height:maxY-minY}}}
@@ -51,21 +51,35 @@ $('panelSchedule').innerHTML=panels}
 function printWrapper(){
   renderWrapper();
   const source=wrapperCanvas;
-  const wide=source.width>=source.height;
-  const pageWide=true;
-  const rotate=!wide&&pageWide;
+  const sctx=source.getContext('2d');
+  const pixels=sctx.getImageData(0,0,source.width,source.height).data;
+  let minX=source.width,minY=source.height,maxX=-1,maxY=-1;
+  for(let y=0;y<source.height;y++){
+    for(let x=0;x<source.width;x++){
+      const i=(y*source.width+x)*4;
+      if(pixels[i+3]>0&&(pixels[i]<248||pixels[i+1]<248||pixels[i+2]<248)){
+        if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;
+      }
+    }
+  }
+  if(maxX<minX||maxY<minY){minX=0;minY=0;maxX=source.width-1;maxY=source.height-1}
+  const cropPad=18;
+  minX=Math.max(0,minX-cropPad);minY=Math.max(0,minY-cropPad);
+  maxX=Math.min(source.width-1,maxX+cropPad);maxY=Math.min(source.height-1,maxY+cropPad);
+  const cropW=maxX-minX+1,cropH=maxY-minY+1;
+  const rotate=cropH>cropW;
   const out=document.createElement('canvas');
-  out.width=rotate?source.height:source.width;
-  out.height=rotate?source.width:source.height;
+  out.width=rotate?cropH:cropW;
+  out.height=rotate?cropW:cropH;
   const octx=out.getContext('2d');
   octx.fillStyle='#fff';octx.fillRect(0,0,out.width,out.height);
   if(rotate){octx.translate(out.width,0);octx.rotate(Math.PI/2)}
-  octx.drawImage(source,0,0);
+  octx.drawImage(source,minX,minY,cropW,cropH,0,0,cropW,cropH);
   const dataUrl=out.toDataURL('image/png');
   const win=window.open('','_blank');
   if(!win){alert('Allow pop-ups to print.');return}
   const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>FieldFab Wrapper</title><style>'+ 
-    '@page{size:11in 8.5in;margin:0.75in}'+
+    '@page{size:letter landscape;margin:0.75in}'+
     '*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;padding:0;background:#fff;overflow:hidden}'+
     'body{display:flex;align-items:center;justify-content:center}'+
     'img{display:block;width:100%;height:100%;object-fit:contain}'+
