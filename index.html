@@ -7,11 +7,11 @@
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
-<link rel="stylesheet" href="styles.css?v=24" />
+<link rel="stylesheet" href="styles.css?v=25" />
 <title>FieldFab</title>
 </head>
 <body>
-<header><div><strong>FieldFab</strong><span>Transition calculator</span></div><button id="resetView" type="button">Reset view</button></header>
+<header><div><strong>FieldFab</strong><span>Transition calculator</span></div><div style="display:flex;gap:8px;align-items:center"><a href="gores.html" style="color:#7dd3fc;font-weight:800;text-decoration:none">Gored elbow</a><button id="resetView" type="button">Reset view</button></div></header>
 <main>
 <section class="card controls">
 <h1>Project settings</h1>
@@ -25,4 +25,4 @@
 <section class="card viewer-card"><div class="viewer-heading"><div><h2>Dimensioned 3D fitting</h2><p>Drag to rotate.</p></div><div class="viewer-actions"><button id="zoomIn">Zoom +</button><button id="zoomOut">Zoom -</button></div></div><div id="viewer"><canvas id="modelCanvas"></canvas></div><p id="seamSummary" class="seam-summary"></p></section>
 <section class="card wrapper-card"><div class="viewer-heading"><div><h2>Annotated fitting layout and allowance tabs</h2><p>Connection tabs are shown outside the fitting edges and labeled by type and size.</p></div><button id="printWrapper" class="print-button">Print wrapper drawing</button></div><div id="wrapperViewer"><canvas id="wrapperCanvas"></canvas></div><div class="tab-legend"><span class="legend-top">Top connection tab</span><span class="legend-bottom">Bottom connection tab</span><span class="legend-seam">Closing seam tab</span><span class="legend-blank">Shear blank</span></div><p id="wrapperStatus" class="drawing-key"></p><div id="blankResults" class="results blank-results"></div><section class="schedule"><h3>Allowance schedule</h3><div id="allowanceSummary" class="allowance-summary"></div><h3>Wrapper dimension schedule</h3><p id="blankSchedule" class="blank-line"></p><div class="table-scroll"><table id="cornerTable"><thead><tr><th>Key</th><th>Line type</th><th>Corner</th><th>Length</th></tr></thead><tbody id="cornerSchedule"></tbody></table></div><div class="table-scroll"><table id="panelTable"><thead><tr><th>Panel</th><th>Between</th><th>Bottom</th><th>Top</th><th>Divider</th></tr></thead><tbody id="panelSchedule"></tbody></table></div></section></section>
 <section class="card"><h2>Fabrication values</h2><div id="openingResults" class="results"></div><h2 class="subheading">Calculated corner edges</h2><div id="results" class="results"></div></section>
-</main><script src="app.js?v=24" defer></script></body></html>
+</main><script src="app.js?v=25" defer></script></body></html>
