@@ -12,8 +12,8 @@ body{font-family:system-ui;margin:0;background:#f1f5f9;color:#0f172a}header{back
 <label>Number of gores<input id="n" type="number" min="2" value="5"></label>
 <label>Elbow angle (deg)<input id="ang" type="number" value="90"></label>
 <label>Show<select id="which"><option value="full">Middle gore</option><option value="end">End gore</option></select></label>
-</div><button id="go">Build layout</button><button onclick="print()">Print</button><div id="err"></div></div>
+</div><button id="go">Build layout</button><button id="printGore">Print gore layout</button><div id="err"></div></div>
 <div class="card"><div class="viewerHead"><div><h2>Elbow preview</h2><p>Built from the entered diameters, angle, and gore count. Drag to rotate.</p></div><button id="resetElbow" type="button">Reset view</button></div><div id="elbowView"><canvas id="elbowCanvas"></canvas></div></div>
 <div class="card"><div class="viewerHead"><div><h2>Gore layout</h2><p>Flat pattern with quarter-point dimensions.</p></div></div><div id="view"><canvas id="c"></canvas></div></div>
 <div class="card" id="tables"></div>
-</main><script src="gores.js?v=27"></script></body></html>
+</main><script src="gores.js?v=28"></script></body></html>
