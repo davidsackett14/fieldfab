@@ -15,25 +15,30 @@ header button{font-size:13px;font-weight:800;padding:7px 12px;border:1px solid #
 .tab.on{background:#0284c7;border-color:#38bdf8;color:#fff}
 .panel{background:#fff;border-radius:12px;padding:14px;margin:12px 0}
 .panel h2{font-size:13px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em;color:#475569}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 label{font-weight:800;font-size:13px;display:flex;flex-direction:column;gap:5px;color:#334155}
 select{font-size:16px;font-weight:700;padding:9px 10px;border:2px solid #94a3b8;border-radius:8px;background:#fff;width:100%}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
-.card{background:#fff;border-radius:12px;padding:16px;border-top:6px solid #0284c7;box-shadow:0 1px 4px #0003;display:flex;flex-direction:column;gap:6px}
+.furnace{background:#e0f2fe;border:1px solid #7dd3fc;border-radius:8px;padding:10px;margin-top:12px;font-size:13.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.fprice{font-weight:900;font-size:18px;color:#0369a1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.card{background:#fff;border-radius:12px;padding:15px;border-top:6px solid #0284c7;box-shadow:0 1px 4px #0003;display:flex;flex-direction:column;gap:6px}
 .card:nth-child(2){border-top-color:#0891b2}
 .card:nth-child(3){border-top-color:#7c3aed}
+.card:nth-child(4){border-top-color:#ca8a04}
 .tier{font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#0369a1}
-.sub{font-size:12.5px;color:#64748b;font-weight:700}
-.price{font-size:32px;font-weight:900;letter-spacing:-.02em;margin-top:4px}
+.sub{font-size:12px;color:#64748b;font-weight:700}
+.model{font-size:12px;color:#64748b;line-height:1.4}
+.price{font-size:29px;font-weight:900;letter-spacing:-.02em;margin-top:3px}
 .reb{font-size:12px;font-weight:800;color:#15803d;background:#dcfce7;padding:6px 9px;border-radius:6px}
+.coolonly{font-size:12px;font-weight:700;color:#475569;background:#f1f5f9;padding:6px 9px;border-radius:6px}
 .soon{border-top:1px dashed #cbd5e1;padding-top:7px;font-size:12px;color:#92400e}
 .soon b{font-size:14px;color:#b45309}
 .soon span{display:block;color:#a16207;font-weight:600}
 .tot{background:#0369a1;color:#fff;border-radius:12px;padding:14px 18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700}
-.tot b{font-size:28px;font-weight:900}
+.tot b{font-size:27px;font-weight:900}
 #internal{background:#fff;border-radius:12px;padding:14px;margin-top:14px;display:none}
 #internal h3{margin:0 0 10px;font-size:15px;color:#b91c1c;text-transform:uppercase;letter-spacing:.05em}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{border:1px solid #e2e8f0;padding:7px;text-align:left}
 th{background:#f1f5f9;font-weight:800}
 .intnote{font-size:12.5px;color:#b91c1c;font-weight:700;margin:10px 0 0}
@@ -52,11 +57,9 @@ footer{padding:18px 14px 30px;text-align:center;color:#64748b;font-size:11.5px;l
       <label>Stages<select id="fstage"></select></label>
       <label>Airflow<select id="fair"></select></label>
       <label>Size<select id="fbtu"></select></label>
-      <label>Model<select id="fmodel"></select></label>
-    </div></div>
+    </div><div class="furnace" id="furnaceStrip"></div></div>
     <div class="panel"><h2>Cooling</h2><div class="row">
-      <label>Capacity<select id="ctons"></select></label>
-      <label>Model<select id="cmodel"></select></label>
+      <label>System size<select id="ctons"></select></label>
     </div></div>
   </div>
 
