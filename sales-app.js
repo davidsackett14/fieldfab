@@ -5,17 +5,16 @@ let VIEW='cust', MODE='conv';
 function uniq(a){return [...new Set(a)];}
 function stageOf(c){if(/Modulating/.test(c))return 'Modulating';if(/Variable/.test(c))return 'Variable';if(/Two Stage/.test(c))return 'Two Stage';return 'Single Stage';}
 function effOf(c){return c.split(' ')[0];}
-// Goodman numbering: [prefix][efficiency 80|96|97][capacity digits][airflow digit][revision]
+// Goodman: [prefix][eff 80|96|97][capacity digits][airflow digit][revision letters]
 function btuOf(m){const e=m.match(/(80|96|97)/);if(!e)return null;
  let rest=m.slice(m.indexOf(e[0])+2).replace(/[A-Z]+$/,'');
  if(!/^\d+$/.test(rest))return null;
  return parseInt(rest.slice(0,-1),10)*1000;}
 function opt(v,sel,label){return '<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(label||v)+'</option>';}
 
-// Furnaces whose category indicates a communicating control
+// ---------- CONVENTIONAL ----------
+let TIER='good';
 function isComm(c){return /Communicating|Variable|Modulating/.test(c);}
-let TIER='good';   // which g4b card sets the furnace requirement
-
 function furnacePool(){
  const eff=$('feff').value, air=$('fair').value;
  const pool=D.f.filter(f=>effOf(f.c)===eff&&f.a===air);
@@ -46,7 +45,7 @@ function pickFurnace(){const l=furnacePool(),bt=+$('fbtu').value;return l.find(f
 function fillCtons(){const cur=$('ctons').value||'3';const list=uniq(D.ac.map(x=>x.t)).sort((a,b)=>a-b);
  $('ctons').innerHTML=list.map(t=>opt(t,cur,t+' ton')).join('');}
 
-const TIERTXT={good:'Good tier - your stage choice',better:'Better tier - communicating furnace',best:'Best tier - communicating furnace',dual:'Dual fuel - communicating furnace'};
+const TIERTXT={good:'Good tier - your stage choice',better:'Better tier - communicating furnace required',best:'Best tier - communicating furnace required',dual:'Dual fuel - communicating furnace required'};
 const TIERS=[{k:'good',n:'Good',s:'14 SEER2 single stage',re:/13\.4|14\.3/},
  {k:'better',n:'Better',s:'16 SEER2 inverter',re:/15\.2|16 SEER2/},
  {k:'best',n:'Best',s:'17 SEER2 two stage',re:/17\.2|17 SEER2/},
@@ -54,6 +53,7 @@ const TIERS=[{k:'good',n:'Good',s:'14 SEER2 single stage',re:/13\.4|14\.3/},
 function pickCool(t,tons){if(t.dual){const f=D.dual.filter(x=>x.t===tons);return f.find(x=>/16 SEER2/.test(x.s))||f[0]||D.dual[0];}
  const f=D.ac.filter(x=>x.t===tons);return f.find(x=>t.re.test(x.s))||f[0]||D.ac[0];}
 
+// ---------- DUCTLESS ----------
 function fillDTons(){const cur=$('dtons').value||'12000';const list=uniq(D.one.map(x=>x.b)).sort((a,b)=>a-b);
  $('dtons').innerHTML=list.map(b=>opt(b,cur,(b/1000)+',000 BTU')).join('');}
 function fillDIndoor(){const bt=+$('dtons').value,l=D.one.filter(x=>x.b===bt);
@@ -84,11 +84,18 @@ function render(){
    const price=peak?x.u.d:x.u.p;
    const peakTotal=frn.d+x.u.d;
    const soon=peak?'':'<div class="soon">Peak season: <b>'+money(peakTotal)+'</b><span>Act now and save '+money(peakTotal-(frnPrice+price))+'</span></div>';
-   const reb=x.t.dual?'<div class="reb">Qualifying utility rebates may apply</div>':'';
    const coolOnly=!x.t.dual&&x.u.o?'<div class="coolonly">Cooling-only convert: '+money(peak?x.u.q:x.u.o)+'</div>':'';
    const g4b=frnPrice+price;
    const on=(x.t.k===TIER)?' on':'';
-   return '<div class="card clickable'+on+'" data-tier="'+x.t.k+'"><div class="tier">'+x.t.n+(on?' &#10003;':'')+'</div><div class="sub">'+x.t.s+'</div><div class="g4blabel">Installed total <span>(furnace + cooling)</span></div><div class="price">'+money(g4b)+'</div><div class="split"><span>Furnace '+money(frnPrice)+'</span><span>Cooling '+money(price)+'</span></div>'+reb+coolOnly+soon+'</div>';
+   let dualBlock='';
+   if(x.t.dual){
+     const rebTotal=D.reb.util.reduce(function(s,r){return s+(r.a||0);},0);
+     const net=Math.max(0,g4b-rebTotal);
+     dualBlock='<div class="reb"><b>Potential rebates up to '+money(rebTotal)+'</b>'+
+       D.reb.util.map(function(r){return '<span>'+r.n+' '+money(r.a)+'</span>';}).join('')+
+       '</div><div class="net"><span>Estimated net after rebates</span><b>'+money(net)+'</b></div>';
+   }
+   return '<div class="card clickable'+on+'" data-tier="'+x.t.k+'"><div class="tier">'+x.t.n+(on?' &#10003;':'')+'</div><div class="sub">'+x.t.s+'</div><div class="g4blabel">Installed total <span>(furnace + cooling)</span></div><div class="price">'+money(g4b)+'</div><div class="split"><span>Furnace '+money(frnPrice)+'</span><span>Cooling '+money(price)+'</span></div>'+dualBlock+coolOnly+soon+'</div>';
   }).join('');
   $('summary').innerHTML='';
   Array.prototype.forEach.call($('cards').querySelectorAll('.clickable'),function(el){
@@ -97,12 +104,17 @@ function render(){
   lines=[{n:'Furnace',m:frn.m,u:frn,price:frnPrice}].concat(tiers.map(x=>({n:x.t.n,m:x.u.m,u:x.u,price:peak?x.u.d:x.u.p})));
  } else {
   const one=pickDOne(),multi=pickDMulti();
-  lines=[{n:'Single-zone ductless',m:one.i+' + '+one.o,u:one,price:peak?one.d:one.p},
-   {n:'Multi-zone ductless',m:multi.m,u:{m:multi.m,e:multi.e,k:multi.e,p:multi.p,d:multi.d},price:peak?multi.d:multi.p}];
+  const onePrice=peak?one.d:one.p, multiPrice=peak?multi.d:multi.p;
+  lines=[
+   {n:'Single-zone ductless',m:one.i+' + '+one.o,s:(one.b/1000)+',000 BTU \u00b7 SEER2 '+one.s,
+    u:{m:one.i+' + '+one.o,e:one.e,k:one.k,p:one.p,d:one.d},price:onePrice},
+   {n:'Multi-zone ductless',m:multi.m,s:multi.heads+' heads on '+multi.m+' \u00b7 '+multi.hm,
+    u:{m:multi.m,e:multi.e,k:multi.e,p:multi.p,d:multi.d},price:multiPrice}];
   $('furnaceStrip').innerHTML='';
   $('cards').innerHTML=lines.map(L=>{
    const soon=peak?'':'<div class="soon">Peak season: <b>'+money(L.u.d)+'</b><span>Act now and save '+money(L.u.d-L.price)+'</span></div>';
-   return '<div class="card"><div class="tier">'+L.n+'</div><div class="model mono">'+L.m+'</div><div class="price">'+money(L.price)+'</div>'+soon+'</div>';
+   const reb=L.n==='Multi-zone ductless'?'<div class="reb">Qualifying utility rebates may apply</div>':'';
+   return '<div class="card"><div class="tier">'+L.n+'</div><div class="sub">'+L.s+'</div><div class="g4blabel">Installed total</div><div class="price">'+money(L.price)+'</div>'+reb+soon+'</div>';
   }).join('');
   $('summary').innerHTML='';
  }
