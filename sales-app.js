@@ -57,18 +57,20 @@ function render(){
  $('ductPanel').style.display=MODE==='duct'?'block':'none';
  let lines=[];
  if(MODE==='conv'){
-  const frn=pickFurnace(),tons=+$('ctons').value,frnPrice=peak?frn.d:frn.p;
+  const frn=pickFurnace(),tons=+$('ctons').value;
+  const frnPrice=peak?frn.d:frn.p;
   $('furnaceStrip').innerHTML='<b>Furnace:</b> '+frn.c+' &middot; '+frn.a+' &middot; '+((btuOf(frn.m)||0)/1000)+',000 BTU &middot; <span class="mono">'+frn.m+'</span><span class="fprice">'+money(frnPrice)+'</span>';
   const tiers=TIERS.map(t=>({t,u:pickCool(t,tons)}));
   $('cards').innerHTML=tiers.map(x=>{
    const price=peak?x.u.d:x.u.p;
-   const soon=peak?'':'<div class="soon">Peak season: <b>'+money(x.u.d)+'</b><span>Act now and save '+money(x.u.d-price)+'</span></div>';
+   const peakTotal=frn.d+x.u.d;
+   const soon=peak?'':'<div class="soon">Peak season: <b>'+money(peakTotal)+'</b><span>Act now and save '+money(peakTotal-(frnPrice+price))+'</span></div>';
    const reb=x.t.dual?'<div class="reb">Qualifying utility rebates may apply</div>':'';
-   const co=!x.t.dual&&x.u.o?'<div class="coolonly">Cooling-only convert: '+money(peak?x.u.q:x.u.o)+'</div>':'';
-   return '<div class="card"><div class="tier">'+x.t.n+'</div><div class="sub">'+x.t.s+'</div><div class="model mono">'+x.u.m+'</div><div class="price">'+money(price)+'</div>'+reb+co+soon+'</div>';
+   const coolOnly=!x.t.dual&&x.u.o?'<div class="coolonly">Cooling-only convert: '+money(peak?x.u.q:x.u.o)+'</div>':'';
+   const g4b=frnPrice+price;
+   return '<div class="card"><div class="tier">'+x.t.n+'</div><div class="sub">'+x.t.s+'</div><div class="g4blabel">Installed total <span>(furnace + cooling)</span></div><div class="price">'+money(g4b)+'</div><div class="split"><span>Furnace '+money(frnPrice)+'</span><span>Cooling '+money(price)+'</span></div>'+reb+coolOnly+soon+'</div>';
   }).join('');
-  const tot=frnPrice+(peak?tiers[1].u.d:tiers[1].u.p);
-  $('summary').innerHTML='<div class="tot"><span>Furnace + Better option, installed</span><b>'+money(tot)+'</b></div>';
+  $('summary').innerHTML='';
   lines=[{n:'Furnace',m:frn.m,u:frn,price:frnPrice}].concat(tiers.map(x=>({n:x.t.n,m:x.u.m,u:x.u,price:peak?x.u.d:x.u.p})));
  } else {
   const one=pickDOne(),multi=pickDMulti();
