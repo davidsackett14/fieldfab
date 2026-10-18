@@ -8,6 +8,9 @@ function effOf(c){return c.split(' ')[0];}
 function isComm(c){return /Communicating|Variable|Modulating/.test(c);}
 function btuOf(m){const e=m.match(/(80|96|97)/);if(!e)return null;let rest=m.slice(m.indexOf(e[0])+2).replace(/[A-Z]+$/,'');if(!/^\d+$/.test(rest))return null;return parseInt(rest.slice(0,-1),10)*1000;}
 function opt(v,sel,label){return '<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(label||v)+'</option>';}
+// ThermWise requires a 95%+ furnace. At 80% only the Rocky Mountain Power rebate applies.
+function eligibleRebates(){return D.reb.util.filter(r=>effOf((arguments[0]||''))!=='80%'||!/therm/i.test(r.n));}
+function rebatesFor(furnaceCat){return D.reb.util.filter(r=>!(effOf(furnaceCat)==='80%'&&/therm/i.test(r.n)));}
 
 // ---------- shared furnace selectors ----------
 function basePool(){const eff=$('feff').value,air=$('fair').value;return D.f.filter(f=>effOf(f.c)===eff&&f.a===air);}
@@ -24,7 +27,7 @@ function fillCommStage(){
  sel.value=COMM_STAGE;
  sel.disabled=only;
  const hint=$('commHint');
- if(hint) hint.textContent=list.length?(only?'Higher tiers use the '+list[0]+' communicating furnace — set by the efficiency choice.':'Higher tiers use a communicating furnace in the type you pick here.'):'No communicating furnace at this efficiency and airflow.';
+ if(hint) hint.textContent=list.length?(only?'Higher tiers use the '+list[0]+' communicating furnace, set by the efficiency choice.':'Higher tiers use a communicating furnace in the type you pick here.'):'No communicating furnace at this efficiency and airflow.';
 }
 function pickAt(pool){const bt=+$('fbtu').value;if(!pool.length)return null;const exact=pool.find(f=>btuOf(f.m)===bt);if(exact)return exact;return pool.slice().sort((a,b)=>Math.abs(btuOf(a.m)-bt)-Math.abs(btuOf(b.m)-bt))[0];}
 function goodFurnace(){goodStages();return pickAt(basePool().filter(f=>stageOf(f.c)===GOOD_STAGE))||D.f[0];}
@@ -63,7 +66,11 @@ function render(){
    if(x.t.k==='good'){stageSel='<label class="instage">Furnace stages<select id="gstage">'+goodStages().map(s=>opt(s,GOOD_STAGE,s)).join('')+'</select></label>';}
    const fnote='<div class="fnote">'+(x.t.k==='good'?'':'Communicating furnace: ')+'<span class="mono">'+x.f.m+'</span> &middot; '+x.f.c+'</div>';
    let dualBlock='';
-   if(x.t.dual){const rebTotal=D.reb.util.reduce((s,r)=>s+(r.a||0),0),net=Math.max(0,g4b-rebTotal);dualBlock='<div class="reb"><b>Potential rebates up to '+money(rebTotal)+'</b>'+D.reb.util.map(r=>'<span>'+r.n+' '+money(r.a)+'</span>').join('')+'</div><div class="net"><span>Estimated net after rebates</span><b>'+money(net)+'</b></div>';}
+   if(x.t.dual){
+    const reb=rebatesFor(x.f.c), rebTotal=reb.reduce((s,r)=>s+(r.a||0),0), net=Math.max(0,g4b-rebTotal);
+    const skipped=D.reb.util.filter(r=>reb.indexOf(r)<0);
+    dualBlock='<div class="reb"><b>Potential rebates up to '+money(rebTotal)+'</b>'+reb.map(r=>'<span>'+r.n+' '+money(r.a)+'</span>').join('')+(skipped.length?'<span class="noreb">No '+skipped.map(r=>r.n).join(' or ')+' rebate on this furnace efficiency</span>':'')+'</div><div class="net"><span>Estimated net after rebates</span><b>'+money(net)+'</b></div>';
+   }
    return '<div class="card"><div class="tier">'+x.t.n+'</div><div class="sub">'+x.t.s+' &middot; <span class="mono">'+x.u.m+'</span></div>'+stageSel+fnote+'<div class="g4blabel">Installed total <span>(furnace + cooling)</span></div><div class="price">'+money(g4b)+'</div><div class="split"><span>Furnace '+money(fp)+'</span><span>Cooling '+money(price)+'</span></div>'+dualBlock+coolOnly+soon+'</div>';
   }).join('');
   const gs=$('gstage');if(gs)gs.onchange=()=>{GOOD_STAGE=gs.value;render();};
