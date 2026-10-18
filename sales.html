@@ -4,55 +4,74 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#0f172a;color:#0f172a}
-header{background:#0f172a;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid #1e293b}
+header{background:#0f172a;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid #1e293b;gap:10px;flex-wrap:wrap}
 header h1{font-size:17px;margin:0;font-weight:800}
 header button{font-size:13px;font-weight:800;padding:7px 12px;border:1px solid #334155;border-radius:7px;background:#1e293b;color:#e2e8f0}
 .wrap{padding:14px;max-width:1100px;margin:auto}
 .badge{display:inline-block;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:99px;background:#1e293b;color:#94a3b8;border:1px solid #334155}
 .badge.on{background:#7c2d12;color:#fed7aa;border-color:#c2410c}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tab{flex:1;text-align:center;font-size:15px;font-weight:800;padding:12px;border-radius:10px;border:2px solid #334155;background:#1e293b;color:#94a3b8}
+.tab.on{background:#0284c7;border-color:#38bdf8;color:#fff}
 .panel{background:#fff;border-radius:12px;padding:14px;margin:12px 0}
 .panel h2{font-size:13px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em;color:#475569}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 label{font-weight:800;font-size:13px;display:flex;flex-direction:column;gap:5px;color:#334155}
 select{font-size:16px;font-weight:700;padding:9px 10px;border:2px solid #94a3b8;border-radius:8px;background:#fff;width:100%}
-.furnace{background:#e0f2fe;border:1px solid #7dd3fc;border-radius:8px;padding:10px;margin-top:12px;font-size:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
-.fprice{font-weight:900;font-size:18px;color:#0369a1}
-.mono{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
 .card{background:#fff;border-radius:12px;padding:16px;border-top:6px solid #0284c7;box-shadow:0 1px 4px #0003;display:flex;flex-direction:column;gap:6px}
 .card:nth-child(2){border-top-color:#0891b2}
 .card:nth-child(3){border-top-color:#7c3aed}
-.card:nth-child(4){border-top-color:#ca8a04}
 .tier{font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#0369a1}
-.sub{font-size:12.5px;color:#64748b;font-weight:600}
-.model{font-size:12.5px;color:#475569;line-height:1.4;font-weight:600}
-.price{font-size:30px;font-weight:900;letter-spacing:-.02em;margin-top:2px}
-.reb{font-size:12.5px;font-weight:800;color:#15803d;background:#dcfce7;padding:6px 9px;border-radius:6px}
-.world{font-size:12.5px;font-weight:700;color:#475569;background:#f1f5f9;padding:6px 9px;border-radius:6px}
+.sub{font-size:12.5px;color:#64748b;font-weight:700}
+.price{font-size:32px;font-weight:900;letter-spacing:-.02em;margin-top:4px}
+.reb{font-size:12px;font-weight:800;color:#15803d;background:#dcfce7;padding:6px 9px;border-radius:6px}
 .soon{border-top:1px dashed #cbd5e1;padding-top:7px;font-size:12px;color:#92400e}
 .soon b{font-size:14px;color:#b45309}
 .soon span{display:block;color:#a16207;font-weight:600}
+.tot{background:#0369a1;color:#fff;border-radius:12px;padding:14px 18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700}
+.tot b{font-size:28px;font-weight:900}
 #internal{background:#fff;border-radius:12px;padding:14px;margin-top:14px;display:none}
 #internal h3{margin:0 0 10px;font-size:15px;color:#b91c1c;text-transform:uppercase;letter-spacing:.05em}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{border:1px solid #e2e8f0;padding:7px;text-align:left}
 th{background:#f1f5f9;font-weight:800}
 .intnote{font-size:12.5px;color:#b91c1c;font-weight:700;margin:10px 0 0}
+.mono{font-family:ui-monospace,Menlo,monospace}
 footer{padding:18px 14px 30px;text-align:center;color:#64748b;font-size:11.5px;line-height:1.5;max-width:900px;margin:auto}
 </style></head>
 <body>
 <header><h1>Proformance Sales</h1><button id="toggle">Show internal</button></header>
 <div class="wrap">
   <span class="badge" id="peakBadge"></span>
-  <div class="panel"><h2>Furnace</h2><div class="row">
-    <label>Efficiency<select id="feff"></select></label>
-    <label>Stages<select id="fstage"></select></label>
-    <label>Airflow<select id="fair"></select></label>
-    <label>Size<select id="fbtu"></select></label>
-  </div><div class="furnace" id="furnaceStrip"></div></div>
-  <div class="panel"><h2>Cooling</h2><div class="row">
-    <label>System size<select id="ctons"></select></label>
-  </div></div>
+  <div class="tabs"><div class="tab on" id="bConv">Conventional</div><div class="tab" id="bDuct">Ductless</div></div>
+
+  <div id="convPanel">
+    <div class="panel"><h2>Furnace</h2><div class="row">
+      <label>Efficiency<select id="feff"></select></label>
+      <label>Stages<select id="fstage"></select></label>
+      <label>Airflow<select id="fair"></select></label>
+      <label>Size<select id="fbtu"></select></label>
+      <label>Model<select id="fmodel"></select></label>
+    </div></div>
+    <div class="panel"><h2>Cooling</h2><div class="row">
+      <label>Capacity<select id="ctons"></select></label>
+      <label>Model<select id="cmodel"></select></label>
+    </div></div>
+  </div>
+
+  <div id="ductPanel" style="display:none">
+    <div class="panel"><h2>Single-zone ductless</h2><div class="row">
+      <label>Capacity<select id="dtons"></select></label>
+      <label>System<select id="dindoor"></select></label>
+    </div></div>
+    <div class="panel"><h2>Multi-zone ductless</h2><div class="row">
+      <label>Outdoor unit<select id="dmulti"></select></label>
+      <label>Heads<select id="dheads"></select></label>
+    </div></div>
+  </div>
+
+  <div id="summary"></div>
   <div class="cards" id="cards"></div>
   <div id="internal"></div>
 </div>
